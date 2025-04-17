@@ -6,6 +6,7 @@
         <title>Trading Checklist</title>
         <style>
             :root {
+                /* Dark theme (default) */
                 --primary-color: #2c3e50;
                 --secondary-color: #34495e;
                 --accent-color: #3498db;
@@ -14,6 +15,19 @@
                 --background-color: #1a1a1a;
                 --card-background: #222222;
                 --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            [data-theme="light"] {
+                --primary-color: #3498db;
+                --secondary-color: #f0f0f0; /* Light gray for checklist items */
+                --accent-color: #3199de;
+                --success-color: #27ae60;
+                --text-color: #333333;
+                --background-color: #f5f5f5;
+                --card-background: #ffffff;
+                --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+                --checkbox-background: #ffffff; /* White background for checkboxes */
+                --progress-bg: #ffffff; /* White background for progress bar */
             }
 
             * {
@@ -83,7 +97,8 @@
                 -webkit-appearance: none;
                 width: 30px;
                 height: 30px;
-                background-color: #333;
+                background-color: var(--checkbox-background, #333);
+                border: 1px solid #ccc;
                 border-radius: 5px;
                 cursor: pointer;
                 display: flex;
@@ -127,7 +142,7 @@
 
             .progress-container {
                 width: 100%;
-                background-color: #333;
+                background-color: var(--progress-bg, #333);
                 border-radius: 10px;
                 overflow: hidden;
                 margin-top: 20px;
@@ -227,6 +242,67 @@
                 font-size: 18px;
                 color: #999;
             }
+
+            .theme-switch-wrapper {
+                position: static;
+                margin-top: 30px;
+                margin-bottom: 20px;
+                margin-left: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                width: auto;
+            }
+
+            .theme-switch {
+                display: inline-block;
+                height: 34px;
+                position: relative;
+                width: 60px;
+            }
+
+            .theme-switch input {
+                display: none;
+            }
+
+            .slider {
+                background-color: #333;
+                bottom: 0;
+                cursor: pointer;
+                left: 0;
+                position: absolute;
+                right: 0;
+                top: 0;
+                transition: 0.4s;
+                border-radius: 34px;
+            }
+
+            .slider:before {
+                background-color: #fff;
+                bottom: 4px;
+                content: "";
+                height: 26px;
+                left: 4px;
+                position: absolute;
+                transition: 0.4s;
+                width: 26px;
+                border-radius: 50%;
+            }
+
+            input:checked + .slider {
+                background-color: var(--accent-color);
+            }
+
+            input:checked + .slider:before {
+                transform: translateX(26px);
+            }
+
+            .slider-icon {
+                color: var(--text-color);
+                font-size: 12px;
+                margin-left: 10px;
+                font-weight: bold;
+            }
         </style>
     </head>
     <body>
@@ -312,11 +388,19 @@
         <audio id="complete-sound" preload="auto">
             <source src="complete-sound.mp3" type="audio/mp3" />
         </audio>
+        
+        <div class="theme-switch-wrapper">
+            <label class="theme-switch" for="checkbox">
+                <input type="checkbox" id="checkbox" />
+                <div class="slider"></div>
+            </label>
+            <span class="slider-icon" id="theme-icon">🌙</span>
+        </div>
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 const checkboxes = document.querySelectorAll(
-                    'input[type="checkbox"]',
+                    '#checklist input[type="checkbox"]',
                 );
                 const progressBar = document.getElementById("progress-bar");
                 const progressContainer =
@@ -329,9 +413,53 @@
                 const completedCount =
                     document.getElementById("completed-count");
                 const totalCount = document.getElementById("total-count");
+                const themeToggle = document.getElementById("checkbox");
+                const themeIcon = document.getElementById("theme-icon");
 
                 // Initialize task count
                 totalCount.textContent = checkboxes.length;
+
+                // Theme functionality
+                function setTheme(isDark) {
+                    if (isDark) {
+                        document.documentElement.removeAttribute("data-theme");
+                        themeIcon.textContent = "🌙"; // moon emoji for dark mode
+                        themeToggle.checked = false;
+                        localStorage.setItem("theme", "dark");
+                    } else {
+                        document.documentElement.setAttribute(
+                            "data-theme",
+                            "light",
+                        );
+                        themeIcon.textContent = "☀️"; // sun emoji for light mode
+                        themeToggle.checked = true;
+                        localStorage.setItem("theme", "light");
+                    }
+                }
+
+                // Check for saved theme preference or use system preference
+                const savedTheme = localStorage.getItem("theme");
+                if (savedTheme) {
+                    setTheme(savedTheme === "dark");
+                } else {
+                    // Check if system prefers dark mode
+                    const prefersDarkScheme = window.matchMedia(
+                        "(prefers-color-scheme: dark)",
+                    );
+                    setTheme(prefersDarkScheme.matches);
+
+                    // Listen for changes in system preference
+                    prefersDarkScheme.addEventListener("change", (e) => {
+                        if (!localStorage.getItem("theme")) {
+                            setTheme(e.matches);
+                        }
+                    });
+                }
+
+                // Add event listener to theme toggle
+                themeToggle.addEventListener("change", function () {
+                    setTheme(!this.checked);
+                });
 
                 // Load saved state from localStorage
                 loadState();
@@ -379,7 +507,7 @@
                 // Update progress function
                 function updateProgress() {
                     const checkedCount = document.querySelectorAll(
-                        'input[type="checkbox"]:checked',
+                        '#checklist input[type="checkbox"]:checked',
                     ).length;
                     const totalCount = checkboxes.length;
                     const progressPercent = (checkedCount / totalCount) * 100;
