@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Trading Checklist</title>
+        <style>
+            :root {
+                --primary-color: #2c3e50;
+                --secondary-color: #34495e;
+                --accent-color: #3498db;
+                --success-color: #2ecc71;
+                --text-color: #ffffff;
+                --background-color: #1a1a1a;
+                --card-background: #222222;
+                --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: "Segoe UI", "Arial", sans-serif;
+            }
+
+            body {
+                background-color: var(--background-color);
+                color: var(--text-color);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                padding: 20px;
+            }
+
+            .container {
+                width: 100%;
+                max-width: 800px;
+                background-color: var(--card-background);
+                padding: 30px;
+                border-radius: 12px;
+                box-shadow: var(--box-shadow);
+            }
+
+            h1 {
+                text-align: center;
+                margin-bottom: 30px;
+                color: var(--accent-color);
+                font-size: 36px;
+            }
+
+            .checklist {
+                list-style-type: none;
+                margin-bottom: 30px;
+            }
+
+            .checklist-item {
+                margin-bottom: 15px;
+                display: flex;
+                align-items: center;
+                padding: 15px;
+                border-radius: 8px;
+                background-color: var(--secondary-color);
+                transition: all 0.3s ease;
+            }
+
+            .checklist-item:hover {
+                transform: translateX(5px);
+                background-color: var(--primary-color);
+            }
+
+            .checklist-item label {
+                font-size: 20px;
+                margin-left: 15px;
+                cursor: pointer;
+                flex: 1;
+                line-height: 1.4;
+            }
+
+            input[type="checkbox"] {
+                appearance: none;
+                -webkit-appearance: none;
+                width: 30px;
+                height: 30px;
+                background-color: #333;
+                border-radius: 5px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                transition: all 0.3s ease;
+            }
+
+            input[type="checkbox"]:after {
+                content: "";
+                width: 100%;
+                height: 100%;
+                display: none;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232ecc71' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: 20px;
+            }
+
+            input[type="checkbox"]:checked {
+                background-color: var(--accent-color);
+                animation: checkAnimation 0.5s ease forwards;
+            }
+
+            input[type="checkbox"]:checked:after {
+                display: block;
+            }
+
+            @keyframes checkAnimation {
+                0% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.2);
+                }
+                100% {
+                    transform: scale(1);
+                }
+            }
+
+            .progress-container {
+                width: 100%;
+                background-color: #333;
+                border-radius: 10px;
+                overflow: hidden;
+                margin-top: 20px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+                position: relative;
+                height: 30px;
+            }
+
+            .progress-bar {
+                width: 0%;
+                height: 30px;
+                background-color: var(--success-color);
+                border-radius: 10px;
+                transition: width 0.5s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                color: var(--text-color);
+                text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            }
+
+            .progress-text {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--text-color);
+                font-weight: bold;
+                text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+                z-index: 2;
+            }
+
+            .completed .progress-bar {
+                animation: progressComplete 1s ease;
+            }
+
+            @keyframes progressComplete {
+                0% {
+                    transform: scale(1);
+                    filter: brightness(1);
+                }
+                50% {
+                    transform: scale(1.03);
+                    filter: brightness(1.2);
+                }
+                100% {
+                    transform: scale(1);
+                    filter: brightness(1);
+                }
+            }
+
+            .reset-button {
+                background-color: var(--accent-color);
+                color: var(--text-color);
+                border: none;
+                padding: 12px 24px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 16px;
+                margin-top: 20px;
+                font-weight: bold;
+                transition: all 0.3s ease;
+                display: block;
+                margin: 20px auto 0;
+            }
+
+            .reset-button:hover {
+                background-color: #2980b9;
+                transform: translateY(-2px);
+            }
+
+            .completed-message {
+                text-align: center;
+                color: var(--success-color);
+                font-size: 24px;
+                font-weight: bold;
+                margin-top: 15px;
+                opacity: 0;
+                height: 0;
+                transition: all 0.5s ease;
+            }
+
+            .completed .completed-message {
+                opacity: 1;
+                height: auto;
+                margin-bottom: 15px;
+            }
+
+            .task-count {
+                text-align: center;
+                margin-bottom: 20px;
+                font-size: 18px;
+                color: #999;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Trading Checklist</h1>
+
+            <div class="task-count">
+                <span id="completed-count">0</span> of
+                <span id="total-count">10</span> tasks completed
+            </div>
+
+            <ul class="checklist" id="checklist">
+                <li class="checklist-item">
+                    <input type="checkbox" id="task1" />
+                    <label for="task1">Understand what price is doing.</label>
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" id="task2" />
+                    <label for="task2"
+                        >Price has tagged a predefined level of interest.</label
+                    >
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" id="task3" />
+                    <label for="task3">Define range and bias.</label>
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" id="task4" />
+                    <label for="task4">Define TP, SL, and entry.</label>
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" id="task5" />
+                    <label for="task5"
+                        >Evidence is jumping at the eyes / multiple
+                        confirmations.</label
+                    >
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" id="task6" />
+                    <label for="task6"
+                        >Buy on downclose candle / Sell on upclose
+                        candle.</label
+                    >
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" id="task7" />
+                    <label for="task7">Enter on fair value.</label>
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" id="task8" />
+                    <label for="task8"
+                        >Position has proven itself correct within the ten first
+                        M1 candles.</label
+                    >
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" id="task9" />
+                    <label for="task9">Do not touch SL.</label>
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" id="task10" />
+                    <label for="task10">Capture a portion of the move.</label>
+                </li>
+            </ul>
+
+            <div class="progress-container" id="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+                <div class="progress-text" id="progress-text">0%</div>
+            </div>
+
+            <div class="completed-message" id="completed-message">
+                All tasks completed! Great job! 🎉
+            </div>
+
+            <button class="reset-button" id="reset-button">
+                Reset Checklist
+            </button>
+        </div>
+
+        <audio id="check-sound" preload="auto">
+            <source src="check-sound.mp3" type="audio/mp3" />
+        </audio>
+        <audio id="complete-sound" preload="auto">
+            <source src="complete-sound.mp3" type="audio/mp3" />
+        </audio>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const checkboxes = document.querySelectorAll(
+                    'input[type="checkbox"]',
+                );
+                const progressBar = document.getElementById("progress-bar");
+                const progressContainer =
+                    document.getElementById("progress-container");
+                const completedMessage =
+                    document.getElementById("completed-message");
+                const resetButton = document.getElementById("reset-button");
+                const checkSound = document.getElementById("check-sound");
+                const completeSound = document.getElementById("complete-sound");
+                const completedCount =
+                    document.getElementById("completed-count");
+                const totalCount = document.getElementById("total-count");
+
+                // Initialize task count
+                totalCount.textContent = checkboxes.length;
+
+                // Load saved state from localStorage
+                loadState();
+
+                // Update progress initially
+                updateProgress();
+
+                // Add event listeners to checkboxes
+                checkboxes.forEach((checkbox) => {
+                    checkbox.addEventListener("change", function () {
+                        if (this.checked) {
+                            // Play check sound
+                            checkSound.currentTime = 0;
+                            checkSound.play();
+                        }
+
+                        // Update progress
+                        updateProgress();
+
+                        // Save state
+                        saveState();
+                    });
+                });
+
+                // Add event listener to reset button
+                resetButton.addEventListener("click", function () {
+                    // Uncheck all checkboxes
+                    checkboxes.forEach((checkbox) => {
+                        checkbox.checked = false;
+                    });
+
+                    // Update progress
+                    updateProgress();
+
+                    // Save state
+                    saveState();
+
+                    // Remove completed class
+                    progressContainer.classList.remove("completed");
+
+                    // Reset completed message
+                    completedMessage.style.display = "none";
+                });
+
+                // Update progress function
+                function updateProgress() {
+                    const checkedCount = document.querySelectorAll(
+                        'input[type="checkbox"]:checked',
+                    ).length;
+                    const totalCount = checkboxes.length;
+                    const progressPercent = (checkedCount / totalCount) * 100;
+
+                    // Update progress bar
+                    progressBar.style.width = progressPercent + "%";
+
+                    // Update progress text
+                    const progressText =
+                        document.getElementById("progress-text");
+                    progressText.textContent =
+                        Math.round(progressPercent) + "%";
+
+                    // Update task count
+                    completedCount.textContent = checkedCount;
+
+                    // Check if all tasks are completed
+                    if (checkedCount === totalCount && totalCount > 0) {
+                        // Play complete sound
+                        completeSound.currentTime = 0;
+                        completeSound.play();
+
+                        // Add completed class for animation
+                        progressContainer.classList.add("completed");
+
+                        // Show completed message
+                        completedMessage.style.display = "block";
+                    } else {
+                        // Remove completed class
+                        progressContainer.classList.remove("completed");
+
+                        // Hide completed message
+                        completedMessage.style.display = "none";
+                    }
+                }
+
+                // Save state function
+                function saveState() {
+                    const state = {};
+                    checkboxes.forEach((checkbox) => {
+                        state[checkbox.id] = checkbox.checked;
+                    });
+                    localStorage.setItem(
+                        "tradingChecklist",
+                        JSON.stringify(state),
+                    );
+                }
+
+                // Load state function
+                function loadState() {
+                    const savedState = localStorage.getItem("tradingChecklist");
+                    if (savedState) {
+                        const state = JSON.parse(savedState);
+                        checkboxes.forEach((checkbox) => {
+                            if (state[checkbox.id] !== undefined) {
+                                checkbox.checked = state[checkbox.id];
+                            }
+                        });
+                    }
+                }
+            });
+        </script>
+    </body>
+</html>
